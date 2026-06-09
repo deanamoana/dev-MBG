@@ -21,10 +21,10 @@ app.use(cors({
 // 1. DAFTAR MICROSERVICES & ALOKASI PORT INTERNAL (Menggunakan path.join absolut)
 const services = [
     { name: 'service-dapur', path: path.join(__dirname, 'service-dapur', 'src', 'index.js'), port: 3001 },
-    { name: 'service-distribusi', path: path.join(__dirname, 'service-distribusi','src', 'index.js'), port: 3002 },
-    { name: 'service-inventory', path: path.join(__dirname, 'service-inventory', 'src','index.js'), port: 3003 },
-    { name: 'service-menu', path: path.join(__dirname, 'service-menu', 'src','index.js'), port: 3004 },
-    { name: 'service-sekolah', path: path.join(__dirname, 'service-sekolah', 'src','index.js'), port: 3005 },
+    { name: 'service-distribusi', path: path.join(__dirname, 'service-distribusi','src', 'index.js'), port: 3005 },
+    { name: 'service-inventory', path: path.join(__dirname, 'service-inventory', 'src','index.js'), port: 3004 },
+    { name: 'service-menu', path: path.join(__dirname, 'service-menu', 'src','index.js'), port: 3002 },
+    { name: 'service-sekolah', path: path.join(__dirname, 'service-sekolah', 'src','index.js'), port: 3003 },
 ];
 
 
@@ -56,25 +56,25 @@ app.use('/api/dapur', createProxyMiddleware({
     pathRewrite: { '^/api/dapur': '' }
 }));
 app.use('/api/distribusi', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3002', 
+    target: 'http://127.0.0.1:3005', 
     changeOrigin: true,
     pathRewrite: { '^/api/distribusi': '' }
 }));
 
 app.use('/api/inventory', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3003', 
+    target: 'http://127.0.0.1:3004', 
     changeOrigin: true,
     pathRewrite: { '^/api/inventory': '' }
 }));
 
 app.use('/api/menu', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3004', 
+    target: 'http://127.0.0.1:3002', 
     changeOrigin: true,
     pathRewrite: { '^/api/menu': '' }
 }));
 
 app.use('/api/sekolah', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3005', 
+    target: 'http://127.0.0.1:3003', 
     changeOrigin: true,
     pathRewrite: { '^/api/sekolah': '' }
 }));
