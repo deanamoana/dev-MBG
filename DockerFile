@@ -2,26 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy root package.json & install gateway dependencies
+# Copy root package.json
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
-# Copy semua service beserta package.json-nya
-COPY service-dapur/package*.json ./service-dapur/
-COPY service-distribusi/package*.json ./service-distribusi/
-COPY service-inventory/package*.json ./service-inventory/
-COPY service-menu/package*.json ./service-menu/
-COPY service-sekolah/package*.json ./service-sekolah/
-
-# Install dependencies tiap service
-RUN cd service-dapur && npm install --production
-RUN cd service-distribusi && npm install --production
-RUN cd service-inventory && npm install --production
-RUN cd service-menu && npm install --production
-RUN cd service-sekolah && npm install --production
-
-# Copy semua source code
+# Copy semua source code (node_modules tidak ikut karena .dockerignore)
 COPY . .
+
+# Install dependencies tiap service di dalam container
+RUN cd service-dapur && npm install
+RUN cd service-distribusi && npm install
+RUN cd service-inventory && npm install
+RUN cd service-menu && npm install
+RUN cd service-sekolah && npm install
 
 EXPOSE 8080
 
