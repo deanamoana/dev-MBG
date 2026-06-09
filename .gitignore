@@ -1,0 +1,26 @@
+# ==========================================
+# Dependencies (Abaikan semua folder node_modules)
+# ==========================================
+node_modules/
+**/node_modules/
+
+# ==========================================
+# Environments (Abaikan semua file .env rahasia)
+# ==========================================
+.env
+.env.*
+**/ .env
+**/ .env.*
+
+# Tambahan keamanan khusus untuk pola folder service kamu
+service-*/node_modules/
+service-*/.env
+service-*/.env.*
+
+# ==========================================
+# OS & IDE Files (Opsional tapi direkomendasikan)
+# ==========================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
