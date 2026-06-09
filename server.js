@@ -50,12 +50,34 @@ services.forEach(service => {
 });
 
 // 2. REVERSE PROXY ROUTING (Menggunakan IP 127.0.0.1 agar stabil di Cloud)
-app.use('/api/dapur', createProxyMiddleware({ target: 'http://127.0.0.1:3001', changeOrigin: true }));
-app.use('/api/distribusi', createProxyMiddleware({ target: 'http://127.0.0.1:3002', changeOrigin: true }));
-app.use('/api/inventory', createProxyMiddleware({ target: 'http://127.0.0.1:3003', changeOrigin: true }));
-app.use('/api/menu', createProxyMiddleware({ target: 'http://127.0.0.1:3004', changeOrigin: true }));
-app.use('/api/sekolah', createProxyMiddleware({ target: 'http://127.0.0.1:3005', changeOrigin: true }));
+app.use('/api/dapur', createProxyMiddleware({ 
+    target: 'http://127.0.0.1:3001', 
+    changeOrigin: true,
+    pathRewrite: { '^/api/dapur': '' }
+}));
+app.use('/api/distribusi', createProxyMiddleware({ 
+    target: 'http://127.0.0.1:3002', 
+    changeOrigin: true,
+    pathRewrite: { '^/api/distribusi': '' }
+}));
 
+app.use('/api/inventory', createProxyMiddleware({ 
+    target: 'http://127.0.0.1:3003', 
+    changeOrigin: true,
+    pathRewrite: { '^/api/inventory': '' }
+}));
+
+app.use('/api/menu', createProxyMiddleware({ 
+    target: 'http://127.0.0.1:3004', 
+    changeOrigin: true,
+    pathRewrite: { '^/api/menu': '' }
+}));
+
+app.use('/api/sekolah', createProxyMiddleware({ 
+    target: 'http://127.0.0.1:3005', 
+    changeOrigin: true,
+    pathRewrite: { '^/api/sekolah': '' }
+}));
 // Rute dasar untuk mengecek apakah Gateway aktif
 
 app.listen(PORT, () => {
