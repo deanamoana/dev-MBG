@@ -1,5 +1,5 @@
 const URL_DAPUR = "https://dev-mbg-production.up.railway.app/api/dapur";
-const URL_SEKOLAH = "http://localhost:3003/api/sekolah";
+const URL_SEKOLAH = "https://dev-mbg-production.up.railway.app/api/sekolah";
 const URL_MENU = "https://dev-mbg-production.up.railway.app/api/menu";
 const URL_INVENTORY ="https://dev-mbg-production.up.railway.app/api/inventory";
 const URL_DISTRIBUSI = "https://dev-mbg-production.up.railway.app/api/distribusi";

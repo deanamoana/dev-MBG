@@ -2,7 +2,7 @@ const BASE_URL = {
     DAPUR: "https://dev-mbg-production.up.railway.app/api/dapur",
     MENU: "https://dev-mbg-production.up.railway.app/api/menu",
     INVENTORY: "https://dev-mbg-production.up.railway.app/api/inventory",
-    SEKOLAH: "http://localhost:3003/api/sekolah",
+    SEKOLAH: "https://dev-mbg-production.up.railway.app/api/sekolah",
     DISTRIBUSI: "https://dev-mbg-production.up.railway.app/api/distribusi"
 };
 
