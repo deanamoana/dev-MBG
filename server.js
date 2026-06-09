@@ -59,7 +59,7 @@ app.use('/api/sekolah', createProxyMiddleware({ target: 'http://127.0.0.1:3005',
 // Rute app.get('/') teks lama ditiadakan agar index.html yang muncul.
 // Kode di bawah ini berfungsi sebagai pelindung jika user mengetik asal rute yang tidak terdaftar,
 // maka mereka akan otomatis dikembalikan ke index.html halaman utama.
-app.get('*', (req, res) => {
+app.get('(.*)', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
