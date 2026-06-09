@@ -60,9 +60,12 @@ services.forEach(service => {
     });
 });
 
-const proxyOptions = (port) => ({
+const proxyOptions = (port, pathPrefix) => ({
     target: `http://127.0.0.1:${port}`,
     changeOrigin: true,
+    pathRewrite: { [`^/api/${pathPrefix}`]: '' }, // ← hapus /api/dapur jadi /
+    // Atau kalau service pakai /dapur:
+    // pathRewrite: { [`^/api`]: '' }, // /api/dapur → /dapur
     on: {
         error: (err, req, res) => {
             console.error(`[Proxy Error] ${err.message}`);
