@@ -1,15 +1,27 @@
 {
     "name": "mbg-barokah-gateway",
     "version": "1.0.0",
+    "workspaces": [
+      "service-dapur",
+      "service-distribusi",
+      "service-inventory",
+      "service-menu",
+      "service-sekolah"
+    ],
     "description": "API Gateway untuk menjalankan 5 service dalam 1 instance Railway",
     "main": "server.js",
     "scripts": {
-        "start": "node server.js"
+        "start": "node server.js",
+        "build": " node server.js --bundle --minify --platform=node --outfile=dist/bundle.js"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.108.0",
+        "axios": "^1.15.2",
         "cors": "^2.8.6",
         "dotenv": "^17.4.2",
-        "express": "^4.19.2",
-        "http-proxy-middleware": "^3.0.0"
+        "express": "^5.2.1",
+        "http-proxy-middleware": "^4.1.0",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1"
     }
 }

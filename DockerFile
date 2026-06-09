@@ -2,7 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# 1. Copy package.json root dan semua sub-service terlebih dahulu
+# Cukup copy semua package.json menggunakan wildcard pattern jika memungkinkan, 
+# atau copy root package.json dan foldernya.
 COPY package*.json ./
 COPY service-dapur/package*.json ./service-dapur/
 COPY service-distribusi/package*.json ./service-distribusi/
@@ -10,18 +11,11 @@ COPY service-inventory/package*.json ./service-inventory/
 COPY service-menu/package*.json ./service-menu/
 COPY service-sekolah/package*.json ./service-sekolah/
 
-# 2. Install dependensi di semua tempat
-RUN npm install
-RUN cd service-dapur && npm install
-RUN cd service-distribusi && npm install
-RUN cd service-inventory && npm install
-RUN cd service-menu && npm install
-RUN cd service-sekolah && npm install
+# npm secara otomatis akan menginstall dependensi root DAN seluruh workspace sekaligus
+RUN npm install --include=dev
 
-# 3. Baru copy seluruh source code sisanya
 COPY . .
 
 EXPOSE 8080
 
-# 4. Pastikan CMD bersih dari log JSON pengotor
 CMD ["node", "server.js"]
