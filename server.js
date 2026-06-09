@@ -51,26 +51,26 @@ services.forEach(service => {
 
 // 2. REVERSE PROXY ROUTING (Menggunakan IP 127.0.0.1 agar stabil di Cloud)
 app.use('/api/dapur', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3001', 
+    target: 'http://dev-mbg.railway.internal:3001', 
     changeOrigin: true,
 }));
 app.use('/api/distribusi', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3005', 
+    target: 'http://dev-mbg.railway.internal:3005', 
     changeOrigin: true,
 }));
 
 app.use('/api/inventory', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3004', 
+    target: 'http://dev-mbg.railway.internal:3004', 
     changeOrigin: true,
 }));
 
 app.use('/api/menu', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3002', 
+    target: 'http://dev-mbg.railway.internal:3002', 
     changeOrigin: true,
 }));
 
 app.use('/api/sekolah', createProxyMiddleware({ 
-    target: 'http://127.0.0.1:3003', 
+    target: 'http://dev-mbg.railway.internal:3003', 
     changeOrigin: true,
 }));
 // Rute dasar untuk mengecek apakah Gateway aktif
