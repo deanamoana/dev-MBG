@@ -1,9 +1,9 @@
 const BASE_URL = {
-    DAPUR: "http://localhost:3001/api/dapur",
-    MENU: "http://localhost:3002/api/menu",
-    INVENTORY: "http://localhost:3004/api/inventory",
-    SEKOLAH: "http://localhost:3003/api/sekolah",
-    DISTRIBUSI: "http://localhost:3005/api/distribusi"
+    DAPUR: "/api/dapur",
+    MENU: "/api/menu",
+    INVENTORY: "/api/inventory",
+    SEKOLAH: "/api/sekolah",
+    DISTRIBUSI: "/api/distribusi"
 };
 
 const API = {

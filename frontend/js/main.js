@@ -1,8 +1,8 @@
-const URL_DAPUR = "http://localhost:3001/api/dapur";
-const URL_SEKOLAH = "http://localhost:3003/api/sekolah";
-const URL_MENU = "http://localhost:3002/api/menu";
-const URL_INVENTORY = "http://localhost:3004/api/inventory";
-const URL_DISTRIBUSI = "http://localhost:3005/api/distribusi";
+const URL_DAPUR = "/api/dapur";
+const URL_SEKOLAH = "/api/sekolah";
+const URL_MENU = "/api/menu";
+const URL_INVENTORY = "/api/inventory";
+const URL_DISTRIBUSI = "/api/distribusi";
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("Sistem Terinisialisasi...");
