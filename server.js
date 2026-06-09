@@ -3,80 +3,99 @@ require('dotenv').config();
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const { fork } = require('child_process');
 const cors = require('cors');
-const path = require('path'); 
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 8080; 
-
-app.get('/', (req, res) => {
-    res.send('API Gateway MBG Barokah Monorepo aktif dan berjalan lancar!');
-});
-app.use(express.static(path.join(__dirname, 'frontend'), { index: false }));
+const PORT = process.env.PORT || 8080;
 
 app.use(cors({
-    origin: 'https://dev-mbg-production.up.railway.app',
+    origin: '*',
     credentials: true
 }));
 
-// 1. DAFTAR MICROSERVICES & ALOKASI PORT INTERNAL (Menggunakan path.join absolut)
+app.use(express.json());
+
+// ✅ Static files DULU (css, js, gambar, dll dari folder frontend/)
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// ✅ Root '/' sekarang serve index.html (bukan teks)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
 const services = [
-    { name: 'service-dapur', path: path.join(__dirname, 'service-dapur', 'src', 'index.js'), port: 3001 },
-    { name: 'service-distribusi', path: path.join(__dirname, 'service-distribusi','src', 'index.js'), port: 3005 },
-    { name: 'service-inventory', path: path.join(__dirname, 'service-inventory', 'src','index.js'), port: 3004 },
-    { name: 'service-menu', path: path.join(__dirname, 'service-menu', 'src','index.js'), port: 3002 },
-    { name: 'service-sekolah', path: path.join(__dirname, 'service-sekolah', 'src','index.js'), port: 3003 },
+    { name: 'service-dapur',      path: path.join(__dirname, 'service-dapur', 'src', 'index.js'),      port: 3001 },
+    { name: 'service-menu',       path: path.join(__dirname, 'service-menu', 'src', 'index.js'),        port: 3002 },
+    { name: 'service-sekolah',    path: path.join(__dirname, 'service-sekolah', 'src', 'index.js'),     port: 3003 },
+    { name: 'service-inventory',  path: path.join(__dirname, 'service-inventory', 'src', 'index.js'),   port: 3004 },
+    { name: 'service-distribusi', path: path.join(__dirname, 'service-distribusi', 'src', 'index.js'),  port: 3005 },
 ];
 
+const SERVICE_STARTUP_DELAY = 3000;
 
-// Menjalankan semua sub-service di background menggunakan child_process.fork
 services.forEach(service => {
-    console.log(`[Gateway] Mengaktifkan ${service.name} pada port internal ${service.port}...`);
-    
+    console.log(`[Gateway] Mengaktifkan ${service.name} pada port ${service.port}...`);
+
     const child = fork(service.path, [], {
         env: { ...process.env, PORT: service.port },
-        cwd: path.join(__dirname, service.name) // Mengirimkan port unik ke setiap service
+        cwd: path.join(__dirname, service.name)
     });
 
-    // TAMBAHAN CCTV: Menangkap pesan error spesifik jika microservice gagal/crash
     child.on('error', (err) => {
-        console.error(`[${service.name}] Gagal dijalankan:`, err.message);
+        console.error(`[${service.name}] ERROR:`, err.message);
     });
 
     child.on('exit', (code) => {
         if (code !== 0 && code !== null) {
-            console.error(` [${service.name}] Mati secara tidak wajar dengan Exit Code: ${code}`);
+            console.error(`[${service.name}] Crash dengan exit code: ${code}`);
         }
+    });
+
+    child.stdout?.on('data', (data) => {
+        console.log(`[${service.name}] ${data.toString().trim()}`);
+    });
+
+    child.stderr?.on('data', (data) => {
+        console.error(`[${service.name}] STDERR: ${data.toString().trim()}`);
     });
 });
 
-// 2. REVERSE PROXY ROUTING (Menggunakan IP 127.0.0.1 agar stabil di Cloud)
-app.use('/api/dapur', createProxyMiddleware({ 
-    target: 'http://dev-mbg.railway.internal:3001', 
+const proxyOptions = (port) => ({
+    target: `http://127.0.0.1:${port}`,
     changeOrigin: true,
-}));
-app.use('/api/distribusi', createProxyMiddleware({ 
-    target: 'http://dev-mbg.railway.internal:3005', 
-    changeOrigin: true,
-}));
+    on: {
+        error: (err, req, res) => {
+            console.error(`[Proxy Error] ${err.message}`);
+            res.status(502).json({ error: 'Service tidak tersedia', detail: err.message });
+        },
+        proxyRes: (proxyRes) => {
+            delete proxyRes.headers['etag'];
+            delete proxyRes.headers['last-modified'];
+            proxyRes.headers['cache-control'] = 'no-store';
+        }
+    }
+});
 
-app.use('/api/inventory', createProxyMiddleware({ 
-    target: 'http://dev-mbg.railway.internal:3004', 
-    changeOrigin: true,
-}));
+setTimeout(() => {
+    app.use('/api/dapur',      createProxyMiddleware(proxyOptions(3001)));
+    app.use('/api/menu',       createProxyMiddleware(proxyOptions(3002)));
+    app.use('/api/sekolah',    createProxyMiddleware(proxyOptions(3003)));
+    app.use('/api/inventory',  createProxyMiddleware(proxyOptions(3004)));
+    app.use('/api/distribusi', createProxyMiddleware(proxyOptions(3005)));
+    console.log('[Gateway] Semua proxy route aktif');
+}, SERVICE_STARTUP_DELAY);
 
-app.use('/api/menu', createProxyMiddleware({ 
-    target: 'http://dev-mbg.railway.internal:3002', 
-    changeOrigin: true,
-}));
+// ✅ Fallback: semua route selain /api/* arahkan ke index.html (untuk SPA/multi-page)
+app.use((req, res, next) => {
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+    } else {
+        next();
+    }
+});
 
-app.use('/api/sekolah', createProxyMiddleware({ 
-    target: 'http://dev-mbg.railway.internal:3003', 
-    changeOrigin: true,
-}));
-// Rute dasar untuk mengecek apakah Gateway aktif
-
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n==================================================`);
-    console.log(`GATEWAY ONLINE: http://127.0.0.1:${PORT}`);
+    console.log(`GATEWAY ONLINE: http://0.0.0.0:${PORT}`);
     console.log(`==================================================\n`);
 });

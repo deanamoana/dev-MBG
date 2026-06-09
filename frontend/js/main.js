@@ -1,25 +1,54 @@
-const URL_DAPUR = "https://dev-mbg-production.up.railway.app/api/dapur";
-const URL_SEKOLAH = "https://dev-mbg-production.up.railway.app/api/sekolah";
-const URL_MENU = "https://dev-mbg-production.up.railway.app/api/menu";
-const URL_INVENTORY ="https://dev-mbg-production.up.railway.app/api/inventory";
+const URL_DAPUR      = "https://dev-mbg-production.up.railway.app/api/dapur";
+const URL_SEKOLAH    = "https://dev-mbg-production.up.railway.app/api/sekolah";
+const URL_MENU       = "https://dev-mbg-production.up.railway.app/api/menu";
+const URL_INVENTORY  = "https://dev-mbg-production.up.railway.app/api/inventory";
 const URL_DISTRIBUSI = "https://dev-mbg-production.up.railway.app/api/distribusi";
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     console.log("Sistem Terinisialisasi...");
-    fetchDapur();
-    fetchSekolah();
-    fetchMenu();
-    fetchInventory();
-    setupFormDapur();
-    setupFormSekolah();
-    setupFormMenu();
-    setupFormInventory();
-    fillDapurDropdown();
-    fillDapurMenuDropdown();
-    fetchDistribusi();
-    setupFormDistribusi();
-    fillDistribusiDropdowns();
+
+    if (document.getElementById('dapur-container') ||
+        document.getElementById('table-body-dapur')) {
+        fetchDapur();
+    }
+
+    if (document.getElementById('sekolah-container') ||
+        document.getElementById('table-body-sekolah')) {
+        fetchSekolah();
+    }
+
+    if (document.getElementById('menu-container') ||
+        document.getElementById('table-body-menu')) {
+        fetchMenu();
+    }
+
+    if (document.getElementById('inventory-container') ||
+        document.getElementById('table-body-inventory')) {
+        fetchInventory();
+    }
+
+    if (document.getElementById('distribusi-container') ||
+        document.getElementById('table-body-distribusi')) {
+        fetchDistribusi();
+    }
+
+    if (document.getElementById('form-dapur'))      setupFormDapur();
+    if (document.getElementById('form-sekolah'))    setupFormSekolah();
+    if (document.getElementById('form-menu'))       setupFormMenu();
+    if (document.getElementById('form-inventory'))  setupFormInventory();
+    if (document.getElementById('form-distribusi')) setupFormDistribusi();
+
+    if (document.getElementById('id_dapur'))      fillDapurDropdown();
+    if (document.getElementById('id_dapur_menu')) fillDapurMenuDropdown();
+
+    if (document.getElementById('id_sekolah_dist') &&
+        document.getElementById('id_menu_dist') &&
+        document.getElementById('id_dapur_dist')) {
+        fillDistribusiDropdowns();
+    }
 });
+
+// ===================== DAPUR =====================
 
 async function fetchDapur() {
     const containerGrid = document.getElementById('dapur-container');
@@ -90,7 +119,6 @@ async function fetchDapur() {
                     </tr>`).join('');
             }
         }
-
     } catch (err) {
         console.error("Error Fetch Dapur:", err);
     }
@@ -104,7 +132,6 @@ async function setupFormDapur() {
     const editId = urlParams.get('id');
 
     if (editId) {
-
         const formTitle = document.querySelector('h3');
         const submitBtn = form.querySelector('button[type="submit"]');
         if (formTitle) formTitle.innerText = "Edit Unit Dapur";
@@ -113,7 +140,6 @@ async function setupFormDapur() {
         try {
             const res = await axios.get(`${URL_DAPUR}/${editId}`);
             const k = res.data;
-
             document.getElementById('nama_dapur').value      = k.nama_dapur || '';
             document.getElementById('kapasitas_porsi').value = k.kapasitas_porsi || 0;
             document.getElementById('lokasi').value          = k.lokasi || '';
@@ -125,13 +151,11 @@ async function setupFormDapur() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const payload = {
             nama_dapur:      document.getElementById('nama_dapur').value,
             lokasi:          document.getElementById('lokasi').value,
             kapasitas_porsi: parseInt(document.getElementById('kapasitas_porsi').value)
         };
-
         try {
             if (editId) {
                 await axios.put(`${URL_DAPUR}/${editId}`, payload);
@@ -168,6 +192,8 @@ function editDapur(id) {
     window.location.href = `crudDapur.html?id=${id}`;
 }
 
+// ===================== SEKOLAH =====================
+
 async function fetchSekolah() {
     const containerGrid = document.getElementById('sekolah-container');
     const tableBody = document.getElementById('table-body-sekolah');
@@ -192,16 +218,16 @@ async function fetchSekolah() {
                     <td class="px-8 py-4 font-bold text-[#113F67]">${s.nama_sekolah}</td>
                     <td class="px-8 py-4 text-center"><span class="bg-gray-100 px-2 py-1 rounded text-[10px]">${s.jenjang || '-'}</span></td>
                     <td class="px-8 py-4 text-center font-bold text-gray-600">${s.jumlah_siswa}</td>
-                    <td class="px-8 py-4 text-center flex justify-center gap-2">
-                    <button onclick="editSekolah(${s.id_sekolah})" 
-                        class="w-8 h-8 rounded-lg bg-blue-50 text-blue-400 hover:bg-blue-500 hover:text-white transition-all">
-                        <i class="fa-solid fa-pencil text-xs"></i>
-                    </button>
-                    <button onclick="deleteSekolah(${s.id_sekolah})" 
-                        class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                </td>
+                    <td class="px-8 py-4 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="editSekolah(${s.id_sekolah})" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-400 hover:bg-blue-500 hover:text-white transition-all">
+                                <i class="fa-solid fa-pencil text-xs"></i>
+                            </button>
+                            <button onclick="deleteSekolah(${s.id_sekolah})" class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>`).join('');
         }
 
@@ -214,14 +240,12 @@ async function fetchSekolah() {
                         <span class="text-sm font-bold text-blue-500">${s.jumlah_siswa} Siswa</span>
                         <span class="text-xs bg-gray-50 px-3 py-1 rounded-full text-gray-400">${s.jenjang}</span>
                     </div>
-                    
                 </div>`).join('');
         }
     } catch (err) {
         console.error("Gagal load sekolah:", err);
     }
 }
-
 
 async function setupFormSekolah() {
     const form = document.getElementById('form-sekolah');
@@ -239,12 +263,11 @@ async function setupFormSekolah() {
         try {
             const res = await axios.get(`${URL_SEKOLAH}/${editId}`);
             const s = res.data;
-
-            document.getElementById('npsn').value           = s.npsn || '';
-            document.getElementById('nama_sekolah').value   = s.nama_sekolah || '';
-            document.getElementById('jenjang').value        = s.jenjang || 'SD';
-            document.getElementById('jumlah_siswa').value   = s.jumlah_siswa || 0;
-            document.getElementById('alamat_sekolah').value = s.alamat_sekolah || '';
+            document.getElementById('npsn').value            = s.npsn || '';
+            document.getElementById('nama_sekolah').value    = s.nama_sekolah || '';
+            document.getElementById('jenjang').value         = s.jenjang || 'SD';
+            document.getElementById('jumlah_siswa').value    = s.jumlah_siswa || 0;
+            document.getElementById('alamat_sekolah').value  = s.alamat_sekolah || '';
         } catch (err) {
             console.error("Gagal load data sekolah untuk edit:", err);
             alert("Gagal memuat data untuk diedit. Cek koneksi backend.");
@@ -253,15 +276,13 @@ async function setupFormSekolah() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const payload = {
-            npsn:          document.getElementById('npsn').value,
-            nama_sekolah:  document.getElementById('nama_sekolah').value,
-            jenjang:       document.getElementById('jenjang').value,
-            jumlah_siswa:  parseInt(document.getElementById('jumlah_siswa').value),
+            npsn:           document.getElementById('npsn').value,
+            nama_sekolah:   document.getElementById('nama_sekolah').value,
+            jenjang:        document.getElementById('jenjang').value,
+            jumlah_siswa:   parseInt(document.getElementById('jumlah_siswa').value),
             alamat_sekolah: document.getElementById('alamat_sekolah').value
         };
-
         try {
             if (editId) {
                 await axios.put(`${URL_SEKOLAH}/${editId}`, payload);
@@ -281,9 +302,8 @@ async function setupFormSekolah() {
 }
 
 function editSekolah(id) {
-    window.location.href = `crudSekolah.html?id=${id}`; 
+    window.location.href = `crudSekolah.html?id=${id}`;
 }
-
 
 async function deleteSekolah(id) {
     if (confirm('Hapus data sekolah ini?')) {
@@ -295,6 +315,8 @@ async function deleteSekolah(id) {
         }
     }
 }
+
+// ===================== MENU =====================
 
 async function fetchMenu() {
     const containerGrid = document.getElementById('menu-container');
@@ -331,13 +353,13 @@ async function fetchMenu() {
                         <div class="pt-4 border-t border-gray-50">
                             <p class="text-[10px] font-black text-gray-300 uppercase mb-2">Komposisi Bahan:</p>
                             <div class="flex flex-wrap gap-1">
-                            ${m.MenuRecipes && m.MenuRecipes.length > 0
-                                ? m.MenuRecipes.map(b => `
-                                    <span class="text-[9px] bg-gray-50 px-2 py-1 rounded-md text-gray-500 border border-gray-100">
-                                        ${b.nama_bahan} (${b.jumlah_kebutuhan} ${b.satuan})
-                                    </span>`).join('')
-                                : '<span class="text-[9px] text-gray-300 italic">Belum ada resep</span>'
-                            }
+                                ${m.MenuRecipes && m.MenuRecipes.length > 0
+                                    ? m.MenuRecipes.map(b => `
+                                        <span class="text-[9px] bg-gray-50 px-2 py-1 rounded-md text-gray-500 border border-gray-100">
+                                            ${b.nama_bahan} (${b.jumlah_kebutuhan} ${b.satuan})
+                                        </span>`).join('')
+                                    : '<span class="text-[9px] text-gray-300 italic">Belum ada resep</span>'
+                                }
                             </div>
                         </div>
                     </div>`).join('');
@@ -379,28 +401,26 @@ async function setupFormMenu() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const idMenu = document.getElementById('id_menu').value;
-        
+
         const recipeRows = document.querySelectorAll('.recipe-row');
         const resep = Array.from(recipeRows).map(row => ({
-            id_inventory: row.querySelector('.id_bahan').value,
+            id_inventory:     row.querySelector('.id_bahan').value,
             jumlah_kebutuhan: parseFloat(row.querySelector('.jumlah_kebutuhan').value)
         })).filter(item => item.id_inventory !== "" && !isNaN(item.jumlah_kebutuhan));
 
         const payload = {
-            nama_paket: document.getElementById('nama_paket').value,
-            deskripsi: document.getElementById('deskripsi').value,
-            id_dapur: document.getElementById('id_dapur_menu').value,
-            MenuRecipes: resep.map(r => ({  
-                id_inventory: r.id_inventory,
+            nama_paket:  document.getElementById('nama_paket').value,
+            deskripsi:   document.getElementById('deskripsi').value,
+            id_dapur:    document.getElementById('id_dapur_menu').value,
+            MenuRecipes: resep.map(r => ({
+                id_inventory:     r.id_inventory,
                 jumlah_kebutuhan: r.jumlah_kebutuhan
             }))
         };
 
         try {
             if (idMenu) {
-
                 await axios.put(`${URL_MENU}/${idMenu}`, payload);
                 alert("Menu Berhasil Diperbarui!");
             } else {
@@ -411,11 +431,10 @@ async function setupFormMenu() {
             form.reset();
             document.getElementById('id_menu').value = '';
             document.querySelector('#form-menu button[type="submit"]').innerText = "Simpan Menu & Resep";
-            
+
             const container = document.getElementById('recipe-container');
-            if(container) container.innerHTML = ''; 
-            addRecipeRow(); 
-            
+            if (container) container.innerHTML = '';
+            addRecipeRow();
             fetchMenu();
         } catch (err) {
             console.error("Gagal proses:", err);
@@ -432,43 +451,6 @@ async function deleteMenu(id) {
         } catch (err) {
             alert("Gagal hapus menu");
         }
-    }
-}
-
-function addRecipeRow() {
-    const container = document.getElementById('recipe-container');
-    if (!container) return;
-
-    const row = document.createElement('div');
-    row.className = "recipe-row";
-    row.style.cssText = "display:grid; grid-template-columns: 1fr 80px 32px; gap:8px; margin-bottom:8px; align-items:center;";
-    row.innerHTML = `
-        <select class="id_bahan w-full p-3 bg-gray-50 rounded-xl border-none text-sm outline-none">
-            <option value="">Pilih Bahan...</option>
-        </select>
-        <input type="number" step="0.01" class="jumlah_kebutuhan w-full p-3 bg-gray-50 rounded-xl border-none text-sm outline-none" placeholder="Jml">
-        <button type="button" onclick="this.parentElement.remove()" 
-            class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
-            <i class="fa-solid fa-minus text-xs"></i>
-        </button>
-    `;
-    container.appendChild(row);
-    fillRecipeBahanDropdown(row.querySelector('.id_bahan'));
-}
-
-async function fillRecipeBahanDropdown(selectElement) {
-    try {
-        const res = await axios.get(URL_INVENTORY);
-        const data = res.data;
-        
-        data.forEach(bahan => {
-            const opt = document.createElement('option');
-            opt.value = bahan.id_inventory;
-            opt.text = `${bahan.nama_bahan} (${bahan.satuan})`;
-            selectElement.appendChild(opt);
-        });
-    } catch (err) {
-        console.error("Gagal memuat list bahan resep:", err);
     }
 }
 
@@ -497,11 +479,31 @@ async function editMenu(id) {
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.querySelector('#form-menu button[type="submit"]').innerText = "Update Menu & Resep";
-
     } catch (err) {
         console.error("Gagal mengambil detail menu:", err);
         alert("Gagal mengambil data detail menu");
     }
+}
+
+function addRecipeRow() {
+    const container = document.getElementById('recipe-container');
+    if (!container) return;
+
+    const row = document.createElement('div');
+    row.className = "recipe-row";
+    row.style.cssText = "display:grid; grid-template-columns: 1fr 80px 32px; gap:8px; margin-bottom:8px; align-items:center;";
+    row.innerHTML = `
+        <select class="id_bahan w-full p-3 bg-gray-50 rounded-xl border-none text-sm outline-none">
+            <option value="">Pilih Bahan...</option>
+        </select>
+        <input type="number" step="0.01" class="jumlah_kebutuhan w-full p-3 bg-gray-50 rounded-xl border-none text-sm outline-none" placeholder="Jml">
+        <button type="button" onclick="this.parentElement.remove()"
+            class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
+            <i class="fa-solid fa-minus text-xs"></i>
+        </button>
+    `;
+    container.appendChild(row);
+    fillRecipeBahanDropdown(row.querySelector('.id_bahan'));
 }
 
 async function addRecipeRowWithData(idBahan, jumlah) {
@@ -514,28 +516,42 @@ async function addRecipeRowWithData(idBahan, jumlah) {
             <option value="">Pilih Bahan...</option>
         </select>
         <input type="number" step="0.01" value="${jumlah}" class="jumlah_kebutuhan w-full p-3 bg-gray-50 rounded-xl border-none text-sm outline-none" placeholder="Jml">
-        <button type="button" onclick="this.parentElement.remove()" 
+        <button type="button" onclick="this.parentElement.remove()"
             class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
             <i class="fa-solid fa-minus text-xs"></i>
         </button>
     `;
     container.appendChild(row);
-    
     const select = row.querySelector('.id_bahan');
     await fillRecipeBahanDropdown(select);
     select.value = idBahan;
 }
 
+async function fillRecipeBahanDropdown(selectElement) {
+    try {
+        const res = await axios.get(URL_INVENTORY);
+        res.data.forEach(bahan => {
+            const opt = document.createElement('option');
+            opt.value = bahan.id_inventory;
+            opt.text  = `${bahan.nama_bahan} (${bahan.satuan})`;
+            selectElement.appendChild(opt);
+        });
+    } catch (err) {
+        console.error("Gagal memuat list bahan resep:", err);
+    }
+}
+
+// ===================== INVENTORY =====================
+
 async function fetchInventory() {
-    const containerGrid = document.getElementById('inventory-container'); 
-    const tableBody = document.getElementById('table-body-inventory'); 
+    const containerGrid = document.getElementById('inventory-container');
+    const tableBody = document.getElementById('table-body-inventory');
 
     if (!containerGrid && !tableBody) return;
 
     try {
         const res = await axios.get(URL_INVENTORY);
         const data = res.data;
-
 
         if (containerGrid) {
             if (data.length === 0) {
@@ -582,7 +598,7 @@ async function fetchInventory() {
                         </span>
                     </td>
                     <td class="px-8 py-5 text-center">
-                        <span class="font-black text-[#113F67]">${i.stok}</span> 
+                        <span class="font-black text-[#113F67]">${i.stok}</span>
                         <span class="text-[10px] text-gray-400 uppercase">${i.satuan}</span>
                     </td>
                     <td class="px-8 py-5 text-center">
@@ -618,10 +634,8 @@ async function setupFormInventory() {
         try {
             const res = await axios.get(`${URL_INVENTORY}/${editId}`);
             const i = res.data;
-
             await fillDapurDropdown();
-
-            document.getElementById('id_dapur').value  = i.id_dapur || '';
+            document.getElementById('id_dapur').value   = i.id_dapur || '';
             document.getElementById('nama_bahan').value = i.nama_bahan || '';
             document.getElementById('stok').value       = i.stok || 0;
             document.getElementById('satuan').value     = i.satuan || 'kg';
@@ -633,14 +647,12 @@ async function setupFormInventory() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const payload = {
             id_dapur:   document.getElementById('id_dapur').value,
             nama_bahan: document.getElementById('nama_bahan').value,
             stok:       parseFloat(document.getElementById('stok').value),
             satuan:     document.getElementById('satuan').value
         };
-
         try {
             if (editId) {
                 await axios.put(`${URL_INVENTORY}/${editId}`, payload);
@@ -673,34 +685,7 @@ function editInventory(id) {
     window.location.href = `crudInventory.html?id=${id}`;
 }
 
-
-async function fillDapurDropdown() {
-    const dropdown = document.getElementById('id_dapur');
-    if (!dropdown) return;
-
-    try {
-        const res = await axios.get(URL_DAPUR);
-        const data = res.data;
-
-        dropdown.innerHTML = '<option value="">-- Pilih Unit Dapur --</option>' + 
-            data.map(d => `<option value="${d.id_dapur}">${d.nama_dapur}</option>`).join('');
-    } catch (err) {
-        dropdown.innerHTML = '<option value="">Gagal memuat dapur</option>';
-    }
-}
-
-async function fillDapurMenuDropdown() {
-    const dropdown = document.getElementById('id_dapur_menu');
-    if (!dropdown) return;
-
-    try {
-        const res = await axios.get(URL_DAPUR);
-        dropdown.innerHTML = '<option value="">-- Pilih Unit Dapur --</option>' +
-            res.data.map(d => `<option value="${d.id_dapur}">${d.nama_dapur}</option>`).join('');
-    } catch (err) {
-        dropdown.innerHTML = '<option value="">Gagal memuat dapur</option>';
-    }
-}
+// ===================== DISTRIBUSI =====================
 
 async function fetchDistribusi() {
     const containerGrid = document.getElementById('distribusi-container');
@@ -729,13 +714,11 @@ async function fetchDistribusi() {
                     </div>
                     <h3 class="text-xl font-black text-[#113F67] mb-1">${d.nama_sekolah}</h3>
                     <p class="text-sm text-gray-500 mb-2 italic">${d.nama_menu || 'Menu belum tertera'}</p>
-
                     ${d.waktu_sampai ? `
                     <p class="text-xs text-gray-400 mb-3 flex items-center gap-1">
-                        <i class="fa-solid fa-clock text-[#33A1E0]"></i> 
+                        <i class="fa-solid fa-clock text-[#33A1E0]"></i>
                         Tiba: ${new Date(d.waktu_sampai).toLocaleDateString('id-ID')}
                     </p>` : ''}
-
                     <div class="flex justify-between items-center pt-4 border-t border-gray-50">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-box-open text-gray-300"></i>
@@ -746,12 +729,11 @@ async function fetchDistribusi() {
                                 <i class="fa-solid fa-shop"></i>
                                 <span>${d.nama_dapur}</span>
                             </div>
-                            <!-- ✅ Tombol Edit & Hapus -->
-                            <button onclick="editDistribusi(${d.id_shipment})" 
+                            <button onclick="editDistribusi(${d.id_shipment})"
                                 class="w-8 h-8 rounded-lg bg-blue-50 text-blue-400 hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center">
                                 <i class="fa-solid fa-pencil text-xs"></i>
                             </button>
-                            <button onclick="deleteDistribusi(${d.id_shipment})" 
+                            <button onclick="deleteDistribusi(${d.id_shipment})"
                                 class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
@@ -761,18 +743,22 @@ async function fetchDistribusi() {
         }
 
         if (tableBody) {
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="px-8 py-10 text-center text-gray-400">Belum ada data distribusi.</td></tr>`;
+                return;
+            }
             tableBody.innerHTML = data.map(d => `
-                <tr>
-                    <td class="px-8 py-4 font-bold">${d.nama_sekolah}</td>
+                <tr class="hover:bg-gray-50 transition-colors text-sm">
+                    <td class="px-8 py-4 font-bold text-[#113F67]">${d.nama_sekolah}</td>
                     <td class="px-8 py-4">${d.nama_menu || '-'}</td>
-                    <td class="px-8 py-4 text-center">${d.jumlah_porsi || 0}</td>
+                    <td class="px-8 py-4 text-center font-bold">${d.jumlah_porsi || 0}</td>
                     <td class="px-8 py-4 text-center">
                         <div class="flex justify-center gap-2">
                             <button onclick="editDistribusi(${d.id_shipment})" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-400 hover:bg-blue-500 hover:text-white transition-all">
                                 <i class="fa-solid fa-pencil text-xs"></i>
                             </button>
-                            <button onclick="deleteDistribusi(${d.id_shipment})" class="text-red-400 hover:text-red-600">
-                                <i class="fa-solid fa-trash-can"></i>
+                            <button onclick="deleteDistribusi(${d.id_shipment})" class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
                     </td>
@@ -780,34 +766,6 @@ async function fetchDistribusi() {
         }
     } catch (err) {
         console.error("Gagal load distribusi:", err);
-    }
-}
-
-async function fillDistribusiDropdowns() {
-    const sekolahSelect = document.getElementById('id_sekolah_dist');
-    const menuSelect = document.getElementById('id_menu_dist');
-    const dapurSelect = document.getElementById('id_dapur_dist');
-
-    if (!sekolahSelect || !menuSelect || !dapurSelect) return;
-
-    try {
-        const [resSekolah, resMenu, resDapur] = await Promise.all([
-            axios.get(URL_SEKOLAH),
-            axios.get(URL_MENU),
-            axios.get(URL_DAPUR)
-        ]);
-
-        sekolahSelect.innerHTML = '<option value="">Pilih Sekolah...</option>' + 
-            resSekolah.data.map(s => `<option value="${s.id_sekolah}">${s.nama_sekolah}</option>`).join('');
-
-        menuSelect.innerHTML = '<option value="">Pilih Menu...</option>' + 
-            resMenu.data.map(m => `<option value="${m.id_menu}">${m.nama_paket}</option>`).join('');
-
-        dapurSelect.innerHTML = '<option value="">Pilih Dapur...</option>' + 
-            resDapur.data.map(d => `<option value="${d.id_dapur}">${d.nama_dapur}</option>`).join('');
-            
-    } catch (err) {
-        console.error("Gagal memuat data dropdown:", err);
     }
 }
 
@@ -826,7 +784,6 @@ async function setupFormDistribusi() {
 
         try {
             await fillDistribusiDropdowns();
-
             const res = await axios.get(`${URL_DISTRIBUSI}/${editId}`);
             const d = res.data;
 
@@ -848,7 +805,6 @@ async function setupFormDistribusi() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const waktuSampai = document.getElementById('waktu_sampai')?.value;
         const statusKirim = document.getElementById('status_kirim').value;
 
@@ -858,7 +814,7 @@ async function setupFormDistribusi() {
             id_dapur:     document.getElementById('id_dapur_dist').value,
             jumlah_porsi: parseInt(document.getElementById('jumlah_porsi').value),
             status:       statusKirim,
-            waktu_sampai: statusKirim === 'Diterima' 
+            waktu_sampai: statusKirim === 'Diterima'
                 ? new Date().toISOString().split('T')[0]
                 : (waktuSampai || null),
             tanggal: new Date().toISOString().split('T')[0]
@@ -895,6 +851,55 @@ async function deleteDistribusi(id) {
     }
 }
 
-function editDistribusi(id) {
-    window.location.href = `crudDistribusi.html?id=${id}`;
+// ===================== DROPDOWN HELPERS =====================
+
+async function fillDapurDropdown() {
+    const dropdown = document.getElementById('id_dapur');
+    if (!dropdown) return;
+    try {
+        const res = await axios.get(URL_DAPUR);
+        dropdown.innerHTML = '<option value="">-- Pilih Unit Dapur --</option>' +
+            res.data.map(d => `<option value="${d.id_dapur}">${d.nama_dapur}</option>`).join('');
+    } catch (err) {
+        dropdown.innerHTML = '<option value="">Gagal memuat dapur</option>';
+    }
+}
+
+async function fillDapurMenuDropdown() {
+    const dropdown = document.getElementById('id_dapur_menu');
+    if (!dropdown) return;
+    try {
+        const res = await axios.get(URL_DAPUR);
+        dropdown.innerHTML = '<option value="">-- Pilih Unit Dapur --</option>' +
+            res.data.map(d => `<option value="${d.id_dapur}">${d.nama_dapur}</option>`).join('');
+    } catch (err) {
+        dropdown.innerHTML = '<option value="">Gagal memuat dapur</option>';
+    }
+}
+
+async function fillDistribusiDropdowns() {
+    const sekolahSelect = document.getElementById('id_sekolah_dist');
+    const menuSelect    = document.getElementById('id_menu_dist');
+    const dapurSelect   = document.getElementById('id_dapur_dist');
+
+    if (!sekolahSelect || !menuSelect || !dapurSelect) return;
+
+    try {
+        const [resSekolah, resMenu, resDapur] = await Promise.all([
+            axios.get(URL_SEKOLAH),
+            axios.get(URL_MENU),
+            axios.get(URL_DAPUR)
+        ]);
+
+        sekolahSelect.innerHTML = '<option value="">Pilih Sekolah...</option>' +
+            resSekolah.data.map(s => `<option value="${s.id_sekolah}">${s.nama_sekolah}</option>`).join('');
+
+        menuSelect.innerHTML = '<option value="">Pilih Menu...</option>' +
+            resMenu.data.map(m => `<option value="${m.id_menu}">${m.nama_paket}</option>`).join('');
+
+        dapurSelect.innerHTML = '<option value="">Pilih Dapur...</option>' +
+            resDapur.data.map(d => `<option value="${d.id_dapur}">${d.nama_dapur}</option>`).join('');
+    } catch (err) {
+        console.error("Gagal memuat data dropdown:", err);
+    }
 }

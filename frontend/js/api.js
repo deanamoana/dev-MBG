@@ -1,34 +1,39 @@
-const BASE_URL = {
-    DAPUR: "https://dev-mbg-production.up.railway.app/api/dapur",
-    MENU: "https://dev-mbg-production.up.railway.app/api/menu",
-    INVENTORY: "https://dev-mbg-production.up.railway.app/api/inventory",
-    SEKOLAH: "https://dev-mbg-production.up.railway.app/api/sekolah",
-    DISTRIBUSI: "https://dev-mbg-production.up.railway.app/api/distribusi"
-};
+const BASE_URL = "https://dev-mbg-production.up.railway.app";
 
 const API = {
     dapur: {
-        getAll: () => axios.get(`${BASE_URL.DAPUR}/dapur`),
-        create: (data) => axios.post(`${BASE_URL.DAPUR}/dapur`, data),
-        delete: (id) => axios.delete(`${BASE_URL.DAPUR}/dapur/${id}`)
+        getAll: () => axios.get(`${BASE_URL}/api/dapur`),
+        getOne: (id) => axios.get(`${BASE_URL}/api/dapur/${id}`),
+        create: (data) => axios.post(`${BASE_URL}/api/dapur`, data),
+        update: (id, data) => axios.put(`${BASE_URL}/api/dapur/${id}`, data),
+        delete: (id) => axios.delete(`${BASE_URL}/api/dapur/${id}`)
     },
     menu: {
-        getAll: () => axios.get(`${BASE_URL.MENU}/menus`),
-        create: (data) => axios.post(`${BASE_URL.MENU}/menus`, data),
-        delete: (id) => axios.delete(`${BASE_URL.MENU}/menus/${id}`)
+        getAll: () => axios.get(`${BASE_URL}/api/menu`),
+        getOne: (id) => axios.get(`${BASE_URL}/api/menu/${id}`),
+        create: (data) => axios.post(`${BASE_URL}/api/menu`, data),
+        update: (id, data) => axios.put(`${BASE_URL}/api/menu/${id}`, data),
+        delete: (id) => axios.delete(`${BASE_URL}/api/menu/${id}`)
     },
     inventory: {
-        getAll: () => axios.get(`${BASE_URL.INVENTORY}/inventories`),
-        create: (data) => axios.post(`${BASE_URL.INVENTORY}/inventories`, data),
-        delete: (id) => axios.delete(`${BASE_URL.INVENTORY}/inventories/${id}`)
+        getAll: () => axios.get(`${BASE_URL}/api/inventory`),
+        getOne: (id) => axios.get(`${BASE_URL}/api/inventory/${id}`),
+        create: (data) => axios.post(`${BASE_URL}/api/inventory`, data),
+        update: (id, data) => axios.put(`${BASE_URL}/api/inventory/${id}`, data),
+        delete: (id) => axios.delete(`${BASE_URL}/api/inventory/${id}`)
     },
     sekolah: {
-        getAll: () => axios.get(`${BASE_URL.SEKOLAH}/sekolah`),
-        create: (data) => axios.post(`${BASE_URL.SEKOLAH}/sekolah`, data)
+        getAll: () => axios.get(`${BASE_URL}/api/sekolah`),
+        getOne: (id) => axios.get(`${BASE_URL}/api/sekolah/${id}`),
+        create: (data) => axios.post(`${BASE_URL}/api/sekolah`, data),
+        update: (id, data) => axios.put(`${BASE_URL}/api/sekolah/${id}`, data),
+        delete: (id) => axios.delete(`${BASE_URL}/api/sekolah/${id}`)
     },
     distribusi: {
-        getAll: () => axios.get(`${BASE_URL.DISTRIBUSI}/distribusi`),
-        create: (data) => axios.post(`${BASE_URL.DISTRIBUSI}/distribusi`, data),
-        delete: (id) => axios.delete(`${BASE_URL.DISTRIBUSI}/distribusi/${id}`)
+        getAll: () => axios.get(`${BASE_URL}/api/distribusi`),
+        getOne: (id) => axios.get(`${BASE_URL}/api/distribusi/${id}`),
+        create: (data) => axios.post(`${BASE_URL}/api/distribusi`, data),
+        update: (id, data) => axios.put(`${BASE_URL}/api/distribusi/${id}`, data),
+        delete: (id) => axios.delete(`${BASE_URL}/api/distribusi/${id}`)
     }
 };
