@@ -2,20 +2,26 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy root package.json
+# 1. Copy package.json root dan semua sub-service terlebih dahulu
 COPY package*.json ./
+COPY service-dapur/package*.json ./service-dapur/
+COPY service-distribusi/package*.json ./service-distribusi/
+COPY service-inventory/package*.json ./service-inventory/
+COPY service-menu/package*.json ./service-menu/
+COPY service-sekolah/package*.json ./service-sekolah/
+
+# 2. Install dependensi di semua tempat
 RUN npm install
-
-# Copy semua source code (node_modules tidak ikut karena .dockerignore)
-COPY . .
-
-# Install dependencies tiap service di dalam container
 RUN cd service-dapur && npm install
 RUN cd service-distribusi && npm install
 RUN cd service-inventory && npm install
 RUN cd service-menu && npm install
 RUN cd service-sekolah && npm install
 
+# 3. Baru copy seluruh source code sisanya
+COPY . .
+
 EXPOSE 8080
 
+# 4. Pastikan CMD bersih dari log JSON pengotor
 CMD ["node", "server.js"]
