@@ -8,12 +8,17 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 8080; 
 
+// 1. UTAMAKAN FRONTEND STATIS
+// Express akan otomatis menyajikan index.html saat domain utama (/) diakses
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// CORS sekarang bersifat opsional karena satu domain, tetapi tetap dipasang agar aman
 app.use(cors({
-    origin: 'https://dapur-mbg-nu.vercel.app',
+    origin: 'https://dev-mbg-production.up.railway.app',
     credentials: true
 }));
 
-// 1. DAFTAR MICROSERVICES & ALOKASI PORT INTERNAL (Menggunakan path.join absolut)
+// 2. DAFTAR MICROSERVICES & ALOKASI PORT INTERNAL
 const services = [
     { name: 'service-dapur', path: path.join(__dirname, 'service-dapur', 'src', 'index.js'), port: 3001 },
     { name: 'service-distribusi', path: path.join(__dirname, 'service-distribusi','src', 'index.js'), port: 3002 },
@@ -22,17 +27,15 @@ const services = [
     { name: 'service-sekolah', path: path.join(__dirname, 'service-sekolah', 'src','index.js'), port: 3005 },
 ];
 
-
 // Menjalankan semua sub-service di background menggunakan child_process.fork
 services.forEach(service => {
     console.log(`[Gateway] Mengaktifkan ${service.name} pada port internal ${service.port}...`);
     
     const child = fork(service.path, [], {
         env: { ...process.env, PORT: service.port },
-        cwd: path.join(__dirname, service.name) // Mengirimkan port unik ke setiap service
+        cwd: path.join(__dirname, service.name)
     });
 
-    // TAMBAHAN CCTV: Menangkap pesan error spesifik jika microservice gagal/crash
     child.on('error', (err) => {
         console.error(`[${service.name}] Gagal dijalankan:`, err.message);
     });
@@ -44,20 +47,26 @@ services.forEach(service => {
     });
 });
 
-// 2. REVERSE PROXY ROUTING (Menggunakan IP 127.0.0.1 agar stabil di Cloud)
+// 3. REVERSE PROXY ROUTING
 app.use('/api/dapur', createProxyMiddleware({ target: 'http://127.0.0.1:3001', changeOrigin: true }));
 app.use('/api/distribusi', createProxyMiddleware({ target: 'http://127.0.0.1:3002', changeOrigin: true }));
 app.use('/api/inventory', createProxyMiddleware({ target: 'http://127.0.0.1:3003', changeOrigin: true }));
 app.use('/api/menu', createProxyMiddleware({ target: 'http://127.0.0.1:3004', changeOrigin: true }));
 app.use('/api/sekolah', createProxyMiddleware({ target: 'http://127.0.0.1:3005', changeOrigin: true }));
 
-// Rute dasar untuk mengecek apakah Gateway aktif
-app.get('/', (req, res) => {
-    res.send('API Gateway MBG Barokah Monorepo aktif dan berjalan lancar!');
+
+// 4. FALLBACK ROUTE (PENTING!)
+// Rute app.get('/') teks lama ditiadakan agar index.html yang muncul.
+// Kode di bawah ini berfungsi sebagai pelindung jika user mengetik asal rute yang tidak terdaftar,
+// maka mereka akan otomatis dikembalikan ke index.html halaman utama.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
+
+// 5. JALANKAN SERVER
 app.listen(PORT, () => {
     console.log(`\n==================================================`);
-    console.log(`GATEWAY ONLINE: http://127.0.0.1:${PORT}`);
+    console.log(`GATEWAY & FRONTEND ONLINE: http://127.0.0.1:${PORT}`);
     console.log(`==================================================\n`);
 });
